@@ -1,0 +1,11 @@
+[package]
+name = "libheat"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+
+[build-dependencies]
+cc = { version = "1.0" }
+walkdir = "2"

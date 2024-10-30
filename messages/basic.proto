@@ -1,0 +1,8 @@
+syntax = "proto3";
+package basic;
+
+// [DART-SIGNAL]
+message GenericDartSignal { string text = 1; }
+
+// [RUST-SIGNAL]
+message GenericRustSignal { string text = 1; }

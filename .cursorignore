@@ -1,0 +1,10 @@
+# Ignore all files in the `dist` directory
+dist/
+
+native/hub/libheat/
+
+# Ignore all `.log` files
+*.log
+
+# Ignore specific file `config.json`
+config.json

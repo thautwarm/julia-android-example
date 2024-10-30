@@ -1,0 +1,103 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.example.julia_android"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.example.julia_android"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig = signingConfigs.debug
+        }
+    }
+
+    // below are the configurations for Rust and libc++_shared.so
+    // in short, we copy the libc++_shared.so from NDK to JniLibs and clean it after assembling
+    afterEvaluate {
+        def ndkDir = android.ndkDirectory
+        def libCppDir = "$ndkDir/sources/cxx-stl/llvm-libc++/libs"
+        def jniLibsDir = "$projectDir/src/main/jniLibs"
+        def abis = ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
+        // clean JniLibs before and after merge, ensuring that the libc++_shared.so is always up-to-date.
+        task cleanJniLibs {
+            doLast {
+                abis.each { abi ->
+                    def libcSoDest = file("$jniLibsDir/$abi/libc++_shared.so")
+                    if (libcSoDest.exists()) {
+                        println "Deleting $libcSoDest"
+                        libcSoDest.delete() // 构建前清理文件
+                    }
+                }
+            }
+        }
+        // copy libc++_shared.so to JniLibs
+        task copyLibcxxShared {
+            doLast {
+                println "Now let's make libhub.so happy ;)"
+                abis.each { abi ->
+                    def libcSoSrc = file("$libCppDir/$abi/libc++_shared.so")
+                    def libcSoDest = file("$jniLibsDir/$abi/libc++_shared.so")
+                    if (libcSoSrc.exists()) {
+                        println "Copying $libcSoSrc to $libcSoDest"
+                        copy {
+                            from libcSoSrc
+                            into "$jniLibsDir/$abi"
+                        }
+                    } else {
+                        throw new Exception("libc++_shared.so for ABI $abi not found in NDK at $libCppDir.")
+                    }
+                }
+            }
+        }
+        // when merging JniLibs, first clean then copy
+        tasks.matching {
+            it.name.startsWith('merge') && it.name.contains('JniLib')
+        }.all { task ->
+            task.dependsOn cleanJniLibs
+            task.dependsOn copyLibcxxShared
+        }
+        // after assembling, clean JniLibs
+        tasks.matching {
+            it.name.startsWith('assemble') || it.name.contains('build')
+        }.all { task ->
+            // avoid using task.finalizedBy(cleanJniLibs) because it will cause circular dependency
+            task.doLast {
+                println "Cleaning JniLibs after $task.name"
+                cleanJniLibs.actions.each {
+                    it.execute(task)
+                }
+            }
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
