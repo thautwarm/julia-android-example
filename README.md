@@ -1,5 +1,12 @@
 # Julia Android Example
 
+<!-- load static/output.gif and center it -->
+<center>
+    <img src="static/output.gif">
+</center>
+
+You can also download the APK releases from the release page.
+
 ## Build the Standalone C++ Project
 
 P.S: You don't need to build it again as I placed the built files in `native/libheat`.
