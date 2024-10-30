@@ -1,11 +1,12 @@
 # Julia Android Example
 
 <!-- load static/output.gif and center it -->
-<center>
-    <img src="static/output.gif">
-</center>
 
-You can also download the APK releases from the release page.
+<p align="center">
+<img width="300px" src="static/output.gif">
+</p>
+
+You can also download the APK releases from the [release page](https://github.com/thautwarm/julia-android-example/releases).
 
 ## Build the Standalone C++ Project
 
