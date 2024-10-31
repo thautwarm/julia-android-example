@@ -10,9 +10,9 @@ You can also download the APK releases from the [release page](https://github.co
 
 ## Build the Standalone C++ Project
 
-P.S: You don't need to build it again as I placed the built files in `native/libheat`.
+P.S: You don't need to build it again as I placed the prebuilt C++ files in `native/libheat`.
 
-In order to proceed the code generation, this you will need [SyslabCC](https://www.tongyuan.cc/Download) which is a Julia AOT compiler bundled in MWORKS.Syslab.
+In order to proceed the code generation, you will need [SyslabCC](https://www.tongyuan.cc/Download) which is a Julia AOT compiler bundled in MWORKS.Syslab.
 
 ```bash
 > scc build.jl -o libheat.dll --no-blas
@@ -31,6 +31,7 @@ You need to have an Android mobile device to run the app.
 This project also shall build on Linux x64/aarch64, but it might not build on Windows as SyslabCC released on 2024/06 does not support MSVC (The recent one has supported Window/macOS build but it is not yet available publicly).
 
 ```bash
+# debugging mode for Flutter Android uses 32-bit ABI
 flutter run
 # flutter run -d <your android phone device id>
 ```
@@ -40,7 +41,7 @@ For more details, see [Debug Flutter apps](https://docs.flutter.dev/testing/debu
 
 ## Patches
 
-We uses Rust to build the Julia-generated C++ project and integrate them into Flutter.
+I use Rust to build the Julia-generated C++ project and integrate them into Flutter.
 
 However, the generated library requires `libc++_shared.so` on Android. I use patches from [this](https://github.com/Losses/rune/pull/26):
 
