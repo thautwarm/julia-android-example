@@ -1,3 +1,5 @@
+**NOTE: This project is deprecated, use the official template project to create your own Windows/Linux/macOS/Android/iOS applications with Julia/Flutter: https://github.com/Suzhou-Tongyuan/syslab-deploy.**
+
 # Julia Android Example
 
 <!-- load static/output.gif and center it -->
